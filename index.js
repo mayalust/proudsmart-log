@@ -25,6 +25,9 @@ class Log{
   setMode(bool){
     this.mode = bool
   }
+  hide(){
+    return this
+  }
   log(){
     let args = [].slice.apply(arguments),
       assert = true,

@@ -11,36 +11,64 @@ colors.setTheme({
   debug: 'magenta',
   error: 'red'
 });
+function toString(obj){
+  if(typeof obj === "object"){
+    return JSON.stringify(obj, null, 2)
+  } else {
+    return obj + ""
+  }
+}
 class Log{
-  constructor(){
-    this.debug = true;
+  constructor( bool ){
+    this.debug = typeof bool === "boolean" ? bool : true;
   }
   setMode(bool){
     this.debug = bool
   }
-  log(msg, tag){
-    this.debug ? console.log(msg[tag]);
+  log(){
+    let args = [].slice.apply(arguments),
+      assert = true,
+      bool = args.pop(),
+      tag = args.pop();
+    typeof args[0] === "boolean"
+      ? assert = args.shift() : null;
+    assert && ( this.debug || bool === true )
+      ? console.log.apply(console, args.map( d => toString(d)[tag])) : null;
   }
-  assert(msg, tag){
-    this.debug ? console.assert(msg[tag]);
+  createLog( tag, ar, bool ){
+    let args = [].slice.apply(ar);
+    [].push.apply(args, [tag, typeof bool !== "undefined" ? bool : false]);
+    this.log.apply(this, args);
   }
   success(msg) {
-    this.log(msg, "success");
+    this.createLog( "success", arguments, true );
   }
   error (msg) {
-    this.log(msg, "error");
+    this.createLog( "error", arguments, true );
   }
-  info (){
-    this.log(msg, "info");
-  }
-  assert (msg) {
-    this.assert(msg, "error");
+  info (msg){
+    this.createLog( "info", arguments, true );
   }
   minor (msg) {
-    this.assert(msg, "minor");
+    this.createLog( "minor", arguments, true );
   }
   warn(msg) {
-    this.assert(msg, "warn");
+    this.createLog( "warn", arguments, true );
+  }
+  _success(msg) {
+    this.createLog( "success", arguments );
+  }
+  _error (msg) {
+    this.createLog( "error", arguments );
+  }
+  _info (msg){
+    this.createLog( "info", arguments );
+  }
+  _minor (msg) {
+    this.createLog( "minor", arguments );
+  }
+  _warn(msg) {
+    this.createLog( "warn", arguments );
   }
 }
-module.exports = new Log;
+module.exports = bool => new Log( bool );

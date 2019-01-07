@@ -43,6 +43,13 @@ class Log{
     [].push.apply(args, [tag, typeof bool !== "undefined" ? bool : false]);
     this.log.apply(this, args);
   }
+  makeRun( tag, args ){
+    return {
+      run : d => {
+        d !== false ? this.createLog( "success", args ) : null;
+      }
+    }
+  }
   success() {
     this.createLog( "success", arguments, true );
   }
@@ -59,25 +66,25 @@ class Log{
     this.createLog( "warn", arguments, true );
   }
   _success() {
-    this.createLog( "success", arguments );
+    return this.makeRun( "success", arguments);
   }
   _error () {
-    this.createLog( "error", arguments );
+    return this.makeRun( "error", arguments );
   }
   _info (){
-    this.createLog( "info", arguments );
+    return this.makeRun( "info", arguments );
   }
   _minor () {
-    this.createLog( "minor", arguments );
+    return this.makeRun( "minor", arguments );
   }
   _warn() {
-    this.createLog( "warn", arguments );
+    return this.makeRun( "warn", arguments );
   }
   debug() {
     let args = [].slice.apply(arguments),
       bool = typeof args[0] === "boolean"
       ? args.shift() : false,
-      err = bool ? "_error" : "error",
+      err = bool ? "error" : "error",
       fn = args.pop();
     try {
       typeof fn == "function" ? fn() : null;
@@ -88,9 +95,15 @@ class Log{
     }
   }
   _debug() {
-    let args = [].slice.apply(arguments);
-    args.unshift( true );
-    this.debug.apply(this, args);
+    return {
+      run : d => {
+        if ( d !== false ) {
+          let args = [].slice.apply(arguments);
+          args.unshift( true );
+          this.debug.apply(this, args);
+        }
+      }
+    }
   }
 }
 module.exports = bool => new Log( bool );

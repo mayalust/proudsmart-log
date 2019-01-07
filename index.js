@@ -20,10 +20,10 @@ function toString(obj){
 }
 class Log{
   constructor( bool ){
-    this.debug = typeof bool === "boolean" ? bool : true;
+    this.mode = typeof bool === "boolean" ? bool : true;
   }
   setMode(bool){
-    this.debug = bool
+    this.mode = bool
   }
   log(){
     let args = [].slice.apply(arguments),
@@ -32,7 +32,7 @@ class Log{
       tag = args.pop();
     typeof args[0] === "boolean"
       ? assert = args.shift() : null;
-    assert && ( this.debug || bool === true )
+    assert && ( this.mode || bool === true )
       ? console.log.apply(console, args.map( d => toString(d)[tag])) : null;
   }
   createLog( tag, ar, bool ){
@@ -40,35 +40,46 @@ class Log{
     [].push.apply(args, [tag, typeof bool !== "undefined" ? bool : false]);
     this.log.apply(this, args);
   }
-  success(msg) {
+  success() {
     this.createLog( "success", arguments, true );
   }
-  error (msg) {
+  error () {
     this.createLog( "error", arguments, true );
   }
-  info (msg){
+  info (){
     this.createLog( "info", arguments, true );
   }
-  minor (msg) {
+  minor () {
     this.createLog( "minor", arguments, true );
   }
-  warn(msg) {
+  warn() {
     this.createLog( "warn", arguments, true );
   }
-  _success(msg) {
+  _success() {
     this.createLog( "success", arguments );
   }
-  _error (msg) {
+  _error () {
     this.createLog( "error", arguments );
   }
-  _info (msg){
+  _info (){
     this.createLog( "info", arguments );
   }
-  _minor (msg) {
+  _minor () {
     this.createLog( "minor", arguments );
   }
-  _warn(msg) {
+  _warn() {
     this.createLog( "warn", arguments );
+  }
+  debug() {
+    let args = [].slice.apply(arguments),
+      fn = args.pop();
+    try {
+      typeof fn == "function" ? fn() : null;
+    } catch(e) {
+      this.error.apply(this, args);
+      this.error( `Message : ${e.message}`);
+      this.error( e.stack);
+    }
   }
 }
 module.exports = bool => new Log( bool );

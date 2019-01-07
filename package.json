@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/mayalust/proudsmart-log/issues"
   },
-  "homepage": "https://github.com/mayalust/proudsmart-log#readme"
+  "homepage": "https://github.com/mayalust/proudsmart-log#readme",
+  "dependencies": {
+    "colors": "^1.3.3"
+  }
 }

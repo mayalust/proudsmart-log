@@ -46,7 +46,7 @@ class Log{
   makeRun( tag, args ){
     return {
       run : d => {
-        d !== false ? this.createLog( "success", args ) : null;
+        d !== false ? this.createLog( tag, args ) : null;
       }
     }
   }

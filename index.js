@@ -72,14 +72,22 @@ class Log{
   }
   debug() {
     let args = [].slice.apply(arguments),
+      bool = typeof args[0] === "boolean"
+      ? args.shift() : false,
+      err = bool ? "_error" : "error",
       fn = args.pop();
     try {
       typeof fn == "function" ? fn() : null;
     } catch(e) {
-      this.error.apply(this, args);
-      this.error( `Message : ${e.message}`);
-      this.error( e.stack);
+      this[err].apply(this, args);
+      this[err]( `Message : ${e.message}`);
+      this[err]( e.stack);
     }
+  }
+  _debug() {
+    let args = [].slice.apply(arguments);
+    args.unshift( true );
+    this.debug.apply(this, args);
   }
 }
 module.exports = bool => new Log( bool );
